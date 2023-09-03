@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<head>
+    <style>
+    ul.navbar {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #7c3aed;
+      display: flex;
+      justify-content: center;
+    }
+    
+    ul.navbar li {
+      margin-right: 20px;
+    }
+    
+    ul.navbar li:last-child {
+      margin-right: 0;
+    }
+    
+    ul.navbar li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 25px;
+    }
+    
+    ul.navbar li a:hover {
+      background-color: #111;
+    }
+
+    body::before {
+    content: "";
+    background-image: url("https://d150u0abw3r906.cloudfront.net/wp-content/uploads/2021/10/image2-2-1024x649.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 190%;
+    opacity: 0.5; /* Adjust opacity here (0.1 for 10% opacity) */
+    z-index: -2;
+    /* Shift the background image 20% to the left and 0% vertically */
+    background-position-x: -20%;
+    background-position-y: 0;
+    }
+
+    </style>
+</head>
+<body>
+    
+<ul class="navbar"> 
+  <li><a href="Home.html">Home</a></li>
+  <li><a href="Index.html">Garbage Sorter</a></li>
+  <li><a href="game.html">Trash Dash</a></li>
+</ul>
+</body>
+</html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trash Dash</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .centered {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .Answer_Selection_button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .Answer_Selection_button:hover {
+            background-color: #2980b9;
+        }
+        .h1_font {
+            font-size: 48px;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        .p_font {
+            font-size: 24px;
+            font-family: 'Arial', sans-serif;
+            color: #000000;
+            margin-top: 20px;
+        }
+        #message {
+            font-size: 24px;
+            color: #e74c3c;
+            margin-top: 20px;
+        }
+        #score {
+            font-size: 24px;
+            color: #030000;
+            margin-top: 10px;
+        }
+        .redcolor {
+            background-color: green;
+        }
+        #scoreindicator {
+            height: 2rem;
+            position: absolute;
+            z-index: 30;
+            margin-top: 5rem;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+        }
+        #scoreindicatorbg {
+            background-color: #eee;
+            width: 100%;
+            height: 2rem;
+            position: absolute;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="centered">
+        <h1 class="h1_font">Where should this item go?</h1>
+        <p class="p_font" id="item_name_text">Click something to begin!</p>
+    </div>
+
+    <div class="centered">
+        <button id="Trash_btn" class="Answer_Selection_button" onclick="clickhandle('Trash_btn')">Trash</button> 
+        <button id="Recycling_bin_btn" class="Answer_Selection_button" onclick="clickhandle('Recycling_bin_btn')">Recycling Bin</button> 
+        <button id="GreenBin_btn" class="Answer_Selection_button" onclick="clickhandle('GreenBin_btn')">Green Bin</button> 
+        <button id="StartOver_btn" class="Answer_Selection_button redcolor" onclick="startOver()">Start Over</button>
+    </div>
+
+    <div id="message" class="centered"></div>
+    <div id="score" class="centered"></div>
+
+    <div>
+    <div id="scoreindicator">
+        🗑️
+    </div>
+
+    <div id="scoreindicatorbg">
+    </div>
+    </div>
+
+    <script>
+        const start_over_btn = document.getElementById('StartOver_btn');
+        start_over_btn.style.display = 'none';
+        const items = [
+            "Banana Peel", "Apple Core", "Cherry Seeds", "Empty Plastic Water Bottle", "Food wrapper",
+            "Pet Waste", "Styrofoam container", "Plastic Fork", "Glass Bottle", "Aluminum Can",
+            "Cereal Box", "Newspaper", "Paper Towel Roll", "Eggshells", "Tea Bag", 
+            "Soda Can", "Greasy Pizza Box", "Plastic Bag", "Glass Jar", "Cardboard Box",
+            "Tin Can", "Plastic Spoon", "Paper Plate", "Aluminum Foil", "Plastic Cup"
+        ];  
+
+        let currentIndex = -1;
+        let shuffledItems = [];
+        let score = 0;
+        const maxScore = items.length;
+        let displayedItems = [];
+
+        function getRandomItem() {
+            if (shuffledItems.length === 0) {
+                // If the shuffledItems array is empty or all items have been displayed, reset the arrays
+                if (displayedItems.length === items.length) {
+                    displayedItems = [];
+                }
+                // Shuffle the original items array
+                shuffledItems = [...items];
+                shuffleArray(shuffledItems);
+            }
+            let item = shuffledItems.pop();
+            displayedItems.push(item);
+            return item;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function updateItemText() {
+            const itemText = getRandomItem();
+            document.getElementById('item_name_text').textContent = itemText;
+        }
+
+        function displayMessage(message, color) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = message;
+            messageElement.style.color = color;
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score}/${maxScore}`;
+            document.getElementById('scoreindicator').style.marginLeft = `${(score / 25) * 100}%`
+        }
+
+        function clickhandle(buttonId) {
+            const currentItem = document.getElementById('item_name_text').textContent;
+
+            switch (buttonId) {
+                case 'GreenBin_btn':
+                    if (currentItem === "Coffee Grounds" || currentItem === "Eggshells" || currentItem === "Tea Bag" || currentItem === "Paper Plate" || currentItem === "Banana Peel" || currentItem === "Apple Core" || currentItem === "Cherry Seeds") {
+                        displayMessage('Correct! This item can be composted.', 'green');
+                        score++;
+                    } else {
+                        displayMessage('Incorrect.', 'red');
+                    }
+                    break;
+                case 'Recycling_bin_btn':
+                    if (currentItem === "Milk Carton" || currentItem === "Soup Can" || currentItem === "Plastic Lid" || currentItem === "Plastic Straw" || currentItem === "Empty Plastic Water Bottle" || currentItem === "Styrofoam container" || currentItem === "Glass Bottle" || currentItem === "Aluminum Can" ||currentItem === "Cereal Box" || currentItem === "Newspaper" || currentItem === "Paper Towel Roll" || currentItem === "Soda Can" || currentItem === "Plastic Bag" || currentItem === "Glass Jar" || currentItem === "Cardboard Box" || currentItem === "Tin Can" || currentItem === "Plastic Cup") {
+                        displayMessage('Correct! This item goes in the recycling bin.', 'green');
+                        score++;
+                    } else {
+                        displayMessage('Incorrect.', 'red');
+                    }
+                    break;
+                case 'Trash_btn':
+                    if (currentItem === "Food wrapper" || currentItem === "Plastic Fork" || currentItem === "Plastic Spoon" || currentItem === "Paper Plate" || currentItem === "Aluminum Foil" || currentItem === "Pet Waste" || currentItem === "Greasy Pizza Box") {
+                        displayMessage('Correct! This item goes in the trash.', 'green');
+                        score++;
+                    } else {
+                        displayMessage('Incorrect.', 'red');
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            updateScore();
+
+            // Check if the game has ended
+            if (displayedItems.length === items.length) {
+                displayMessage(`Game Over! Your score is ${score}/${maxScore}.`, 'blue');
+                document.getElementById('score').textContent = '';
+                start_over_btn.style.display = 'block';
+                // Disable the buttons
+                document.getElementById('Trash_btn').disabled = true;
+                document.getElementById('Recycling_bin_btn').disabled = true;
+                document.getElementById('GreenBin_btn').disabled = true;
+            } else {
+                // After handling the click, update the item text
+                updateItemText();
+            }
+        }
+
+        function startOver() {
+            // Reset the game
+            currentIndex = -1;
+            shuffledItems = [];
+            score = 0;
+            displayedItems = [];
+
+            // Enable the buttons
+            document.getElementById('Trash_btn').disabled = false;
+            document.getElementById('Recycling_bin_btn').disabled = false;
+            document.getElementById('GreenBin_btn').disabled = false;
+
+            // Clear the message and score
+            document.getElementById('message').textContent = '';
+            updateScore();
+
+            // Start the game with a new item
+            updateItemText();
+            start_over_btn.style.display = 'none';
+        }
+
+        // Initialize with a random item
+        updateItemText();
+        updateScore();
+    </script>
+</body>
+</html>
