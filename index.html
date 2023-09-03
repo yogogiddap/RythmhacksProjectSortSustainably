@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ai Trash Sorter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bitter&display=swap');
+
+        * {
+            font-family: 'Bitter', serif;
+        }
+
+        body::before {
+            content: "";
+            background-image: url("https://www.gardeningknowhow.com/wp-content/uploads/2020/12/lonely-japanese-cherry.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; /* Change to 100% */
+            opacity: 0.5;
+            z-index: -2;
+            background-position: left top; /* Simplify background position */
+        }
+
+        ul.navbar {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #7c3aed;
+            display: flex;
+            justify-content: center;
+        }
+
+        ul.navbar li {
+            margin-right: 20px;
+        }
+
+        ul.navbar li:last-child {
+            margin-right: 0;
+        }
+
+        ul.navbar li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 25px;
+        }
+
+        ul.navbar li a:hover {
+            background-color: #111;
+        }
+
+        .centered {
+            text-align: center;
+            margin-top: 150px;
+            font-size: 80px;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .left {
+            font-size: 40px;
+            flex: 1;
+        }
+
+        .middle {
+            flex: 1;
+            text-align: center;
+        }
+
+        .right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color .4s ease, transform .4s ease;
+        }
+
+        .button:hover {
+            background-color: #34d399;
+            transform: scale(1.1);
+        }
+
+        input {
+            padding: 0.5rem;
+        }
+
+        .add_LLM_p_setup {
+            color: black;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 25px;
+        }
+    </style>
+</head>
+<body>
+<ul class="navbar">
+    <li><a href="Home.html">Home</a></li>
+    <li><a href="Index.html">Garbage Sorter</a></li>
+    <li><a href="game.html">Trash Dash</a></li>
+</ul>
+<h1 class="centered">Garbage Sorter</h1>
+<div class="container">
+    <div class="left">Enter what you wish to dispose</div>
+    <form id="form" class="middle">
+        <input id="text" name="text" type="text">
+        <button class="button" type="submit">Go</button>
+    </form>
+</div>
+<center>
+    <p class="add_LLM_p_setup" id="generated_id"></p>
+</center>
+<script>
+    function handleSubmit(event) {
+        document.getElementById('generated_id').textContent = 'Loading Please wait..';
+        event.preventDefault();
+
+        const textInput = "Which bin can I dispose this in? Only say which bin it goes in. Possibilities are trash, recycling, green bin, or compost bin." + document.getElementById('text').value;
+
+        fetch('https://api.cohere.ai/v1/generate', {
+            method: 'POST',
+            headers: {
+                "accept": "application/json",
+                "content-type": "application/json",
+                "authorization": "Bearer ffuANIqkKvxv6EIuJY0O6a30DmgOygY2W3DaB4LQ"
+            },
+            body: JSON.stringify({
+                "max_tokens": 50,
+                "truncate": "END",
+                "return_likelihoods": "NONE",
+                "prompt": textInput
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const generatedText = data.generations[0].text;
+            document.getElementById('generated_id').textContent = generatedText;
+            // if (generatedText.includes("compost")) {
+            //     document.getElementById('generated_id').textContent = "Green Bin";
+            // } else if (generatedText.includes("blue bin")) {
+            //     document.getElementById('generated_id').textContent = "Blue Bin";
+            // } else {
+            //     document.getElementById('generated_id').textContent = "Trash Bin";
+            // }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+
+    document.getElementById('form').addEventListener('submit', handleSubmit);
+
+    function handleClick() {
+        console.log('Website has loaded!');
+    }
+</script>
+</body>
+</html>
